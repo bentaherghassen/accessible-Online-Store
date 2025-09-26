@@ -1,0 +1,250 @@
+{% extends "layout.html" %} {% block content %}
+<style>
+    /* Basic styling for the filter sidebar and product grid */
+    .products-container {
+        display: flex;
+        gap: 20px;
+        padding-top: 20px;
+    }
+
+    .filter-sidebar {
+        flex-basis: 250px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .product-grid {
+        flex-grow: 1;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
+
+    .product-card {
+        background-color: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .product-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .card-content {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+    
+    .card-content h4 {
+        font-size: 1.1em;
+        margin-bottom: 5px;
+    }
+    
+    .card-content h4 a {
+        text-decoration: none;
+        color: #333;
+    }
+
+    .card-content .product-price {
+        font-weight: bold;
+        font-size: 1.2em;
+        color: #007bff;
+        margin-bottom: 10px;
+    }
+
+    .card-content .stock-status {
+        font-size: 0.9em;
+        margin-bottom: 10px;
+    }
+
+    .quantity-container {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+
+    .quantity-input {
+        width: 60px;
+    }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .pagination-container a, .pagination-container span {
+        padding: 8px 16px;
+        text-decoration: none;
+        color: #007bff;
+        border: 1px solid #dee2e6;
+        margin: 0 4px;
+        border-radius: 4px;
+    }
+
+    .pagination-container .current-page {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+</style>
+
+<div class="container products-container">
+    <div class="filter-sidebar">
+        <h4>Filter Products</h4>
+        <form action="{{ url_for('products.products') }}" method="get">
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-select" name="category" id="category">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" {% if request.args.get('category')|int == category.id %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="min_price" class="form-label">Min Price</label>
+                <input type="number" class="form-control" name="min_price" id="min_price" value="{{ request.args.get('min_price', '') }}">
+            </div>
+            <div class="mb-3">
+                <label for="max_price" class="form-label">Max Price</label>
+                <input type="number" class="form-control" name="max_price" id="max_price" value="{{ request.args.get('max_price', '') }}">
+            </div>
+            <div class="mb-3">
+                <label for="sort_by" class="form-label">Sort By</label>
+                <select class="form-select" name="sort_by" id="sort_by">
+                    <option value="date_desc" {% if request.args.get('sort_by') == 'date_desc' %}selected{% endif %}>Newest</option>
+                    <option value="price_asc" {% if request.args.get('sort_by') == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="price_desc" {% if request.args.get('sort_by') == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                </select>
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                <a href="{{ url_for('products.products') }}" class="btn btn-secondary">Clear Filters</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="product-grid" id="product-grid">
+        {% for product in products.items %}
+        <div class="product-card">
+            <a href="{{ url_for('products.product_detail', product_id=product.id) }}">
+                {% if product.image_file %}
+                <img src="{{ url_for('static', filename='media/product_images/' + product.image_file) }}" alt="{{ product.name }}">
+                {% else %}
+                <img src="{{ url_for('static', filename='media/product_images/default.png') }}" alt="{{ product.name }}">
+                {% endif %}
+            </a>
+            <div class="card-content">
+                <h4 class="card-title">
+                    <a href="{{ url_for('products.product_detail', product_id=product.id) }}">{{ product.name }}</a>
+                </h4>
+                <p class="product-price">${{ product.price }}</p>
+
+                {% if product.stock > 0 %}
+                <p class="text-success stock-status">In Stock</p>
+                <div class="quantity-container">
+                    <label for="quantity-{{ product.id }}">Qty:</label>
+                    <input type="number" id="quantity-{{ product.id }}" class="form-control quantity-input" value="1" min="1" max="{{ product.stock }}">
+                </div>
+                <button
+                    class="btn btn-dark-pink add-to-cart-btn mt-auto"
+                    data-product-id="{{ product.id }}"
+                >
+                    Add to Cart
+                </button>
+                {% else %}
+                <p class="text-danger stock-status">Out of Stock</p>
+                <button class="btn btn-dark-pink mt-auto" disabled>
+                    Add to Cart
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="pagination-container">
+    {% if products.has_prev %}
+    <a href="{{ url_for('products.products', page=products.prev_num, category=request.args.get('category'), min_price=request.args.get('min_price'), max_price=request.args.get('max_price'), sort_by=request.args.get('sort_by')) }}">Previous</a>
+    {% endif %}
+
+    {% for page_num in products.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if page_num %}
+            {% if products.page == page_num %}
+            <span class="current-page">{{ page_num }}</span>
+            {% else %}
+            <a href="{{ url_for('products.products', page=page_num, category=request.args.get('category'), min_price=request.args.get('min_price'), max_price=request.args.get('max_price'), sort_by=request.args.get('sort_by')) }}">{{ page_num }}</a>
+            {% endif %}
+        {% else %}
+            <span>...</span>
+        {% endif %}
+    {% endfor %}
+
+    {% if products.has_next %}
+    <a href="{{ url_for('products.products', page=products.next_num, category=request.args.get('category'), min_price=request.args.get('min_price'), max_price=request.args.get('max_price'), sort_by=request.args.get('sort_by')) }}">Next</a>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.dataset.productId;
+                const quantityInput = this.closest('.product-card').querySelector('.quantity-input');
+                const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
+
+                if (quantity < 1) {
+                    alert('Quantity must be at least 1.');
+                    return;
+                }
+
+                fetch('{{ url_for("orders.add_to_cart") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ product_id: productId, quantity: quantity })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Cart updated:', data);
+                    alert('Product added to cart!');
+                    // Optionally, update a cart count display
+                    // document.querySelector('#cart-count').innerText = data.cart_count;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to add product to cart.');
+                });
+            });
+        });
+    });
+</script>
+
+{% endblock content %}

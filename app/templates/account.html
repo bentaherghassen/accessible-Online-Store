@@ -1,0 +1,278 @@
+{% extends "layout.html" %} {% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card p-4">
+        <h2 class="text-center mb-4">Account Settings</h2>
+
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active"
+              id="profile-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#profile"
+              type="button"
+              role="tab"
+              aria-controls="profile"
+              aria-selected="true"
+            >
+              <i class="bi bi-person-circle"></i> Edit Profile
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="security-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#security"
+              type="button"
+              role="tab"
+              aria-controls="security"
+              aria-selected="false"
+            >
+              <i class="bi bi-shield-lock-fill"></i> Security
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="danger-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#danger"
+              type="button"
+              role="tab"
+              aria-controls="danger"
+              aria-selected="false"
+            >
+              <i class="bi bi-exclamation-triangle-fill"></i> Danger Zone
+            </button>
+          </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content mt-3" id="myTabContent">
+          <!-- Edit Profile Tab -->
+          <div
+            class="tab-pane fade show active"
+            id="profile"
+            role="tabpanel"
+            aria-labelledby="profile-tab"
+          >
+            <h4 class="mb-3">Edit Profile</h4>
+            <form
+              method="POST"
+              action="{{ url_for('main.account_settings') }}"
+              enctype="multipart/form-data"
+            >
+              {{ update_profile_form.hidden_tag() }}
+              <div class="mb-3 text-center">
+                <img
+                  src="{{ image_file }}"
+                  alt="Profile Picture"
+                  class="rounded-circle mb-3"
+                  style="width: 150px; height: 150px; object-fit: cover"
+                />
+                {{ update_profile_form.picture.label(class="form-label") }} {{
+                update_profile_form.picture(class="form-control") }} {% for
+                error in update_profile_form.picture.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+              <div class="mb-3">
+                {{ update_profile_form.fname.label(class="form-label") }} {{
+                update_profile_form.fname(class="form-control") }} {% for error
+                in update_profile_form.fname.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+              <div class="mb-3">
+                {{ update_profile_form.lname.label(class="form-label") }} {{
+                update_profile_form.lname(class="form-control") }} {% for error
+                in update_profile_form.lname.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+              <div class="mb-3">
+                {{ update_profile_form.username.label(class="form-label") }} {{
+                update_profile_form.username(class="form-control") }} {% for
+                error in update_profile_form.username.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+              <div class="mb-3">
+                {{ update_profile_form.email.label(class="form-label") }} {{
+                update_profile_form.email(class="form-control") }} {% for error
+                in update_profile_form.email.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+              <div class="mb-3">
+                {{ update_profile_form.gender.label(class="form-label") }} {{
+                update_profile_form.gender(class="form-control") }} {% for error
+                in update_profile_form.gender.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+              <div class="mb-3">
+                {{ update_profile_form.phone_number.label(class="form-label") }}
+                {{ update_profile_form.phone_number(class="form-control") }} {%
+                for error in update_profile_form.phone_number.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+              <div class="mb-3">
+                {{ update_profile_form.home_address.label(class="form-label") }}
+                {{ update_profile_form.home_address(class="form-control") }} {%
+                for error in update_profile_form.home_address.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+              <div class="mb-3">
+                {{ update_profile_form.bio.label(class="form-label") }} {{
+                update_profile_form.bio(class="form-control") }} {% for error in
+                update_profile_form.bio.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+              <div class="d-grid">
+                {{ update_profile_form.submit_profile(class="btn btn-primary")
+                }}
+              </div>
+            </form>
+          </div>
+
+          <!-- Security Tab -->
+          <div
+            class="tab-pane fade"
+            id="security"
+            role="tabpanel"
+            aria-labelledby="security-tab"
+          >
+            <h4 class="mb-3">Change Password</h4>
+            <form method="POST" action="{{ url_for('main.account_settings') }}">
+              {{ update_password_form.hidden_tag() }}
+              <div class="mb-3">
+                {{
+                update_password_form.current_password.label(class="form-label")
+                }} {{
+                update_password_form.current_password(class="form-control") }}
+                {% for error in update_password_form.current_password.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+              <div class="mb-3">
+                {{ update_password_form.new_password.label(class="form-label")
+                }} {{ update_password_form.new_password(class="form-control") }}
+                {% for error in update_password_form.new_password.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+              <div class="mb-3">
+                {{
+                update_password_form.confirm_new_password.label(class="form-label")
+                }} {{
+                update_password_form.confirm_new_password(class="form-control")
+                }} {% for error in
+                update_password_form.confirm_new_password.errors %}
+                <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+              </div>
+              <div class="d-grid">
+                {{ update_password_form.submit_password(class="btn btn-primary")
+                }}
+              </div>
+            </form>
+          </div>
+
+          <!-- Danger Zone Tab -->
+          <div
+            class="tab-pane fade"
+            id="danger"
+            role="tabpanel"
+            aria-labelledby="danger-tab"
+          >
+            <h4 class="mb-3 text-danger">Danger Zone</h4>
+            <div class="alert alert-warning" role="alert">
+              <i class="bi bi-exclamation-triangle-fill"></i> This section
+              contains irreversible actions. Proceed with caution.
+            </div>
+
+            <!-- Delete Account Section -->
+            <div class="mt-4">
+              <h5>Delete Account</h5>
+              <p class="text-danger">
+                Warning: This action is permanent and cannot be undone. All your
+                data will be deleted.
+              </p>
+              <!-- The button to trigger the modal -->
+              <button
+                type="button"
+                class="btn btn-danger w-100"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteAccountModal"
+              >
+                <i class="bi bi-trash-fill"></i> Delete My Account
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Password Confirmation -->
+<div
+  class="modal fade"
+  id="deleteAccountModal"
+  tabindex="-1"
+  aria-labelledby="deleteAccountModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteAccountModalLabel">
+          Confirm Account Deletion
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <form method="POST" action="{{ url_for('main.account_settings') }}">
+        {# Form action points to the same /account route #} {{
+        delete_account_form.hidden_tag() }}
+        <div class="modal-body">
+          <p>
+            Are you absolutely sure you want to permanently delete your account?
+            To confirm, please enter your current password below.
+          </p>
+          <div class="mb-3">
+            {{ delete_account_form.password.label(class="form-label") }} {{
+            delete_account_form.password(class="form-control") }} {% for error
+            in delete_account_form.password.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          {{ delete_account_form.submit_delete(class="btn btn-danger") }} {# Use
+          the unique submit button #}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

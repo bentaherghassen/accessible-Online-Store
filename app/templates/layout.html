@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta
+      name="description"
+      content="A brief and compelling description of your page content."
+    />
+    <meta name="keywords" content="keyword1, keyword2, keyword3" />
+    <meta name="author" content="Ghassen Ben Taher" />
+    <meta property="og:title" content="Your Store" />
+    <meta
+      property="og:description"
+      content="I Never thought I'd be a programmer without sight, but with little help from my trusty screen reader and a whole lot of caffeine. here I am!"
+    />
+    <meta property="og:url" content="https://www.bentaherghassen.com" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@bentaherghassen" />
+    <meta name="twitter:creator" content="@bentaherghassen" />
+    <meta name="twitter:title" content="Your Store" />
+    <meta
+      name="twitter:description"
+      content="I Never thought I'd be a programmer without sight, but with little help from my trusty screen reader and a whole lot of caffeine. here I am!"
+    />
+    <meta
+      name="twitter:image"
+      content="https://www.bentaherghassen.com/image.jpg"
+    />
+    <meta name="twitter:domain" content="https://www.bentaherghassen.com" />
+    <meta name="robots" content="index, follow" />
+    <meta
+      name="google-site-verification"
+      content="your-google-verification-code"
+    />
+    <meta name="copyright" content="Copyright © Ghassen Ben Taher" />
+    {% if title %}
+    <title>AppName- {{title}} Page</title>
+    {% else %}
+    <title>AppName</title>
+    {%endif%}
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <script
+      src="https://unpkg.com/htmx.org@2.0.4"
+      integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+
+  <body class="d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-expand-lg navbar-light bg-pink fixed-top">
+      <div class="container-fluid">
+        <a
+          class="navbar-brand text-white fw-bold"
+          href="{{ url_for('main.home') }}"
+          >Your Store</a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarCollapse"
+          aria-controls="navbarCollapse"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <li class="nav-item">
+              <a
+                class="nav-link active text-white"
+                aria-current="page"
+                href="{{ url_for('main.home') }}"
+                >Home</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="{{ url_for('main.about') }}"
+                >About</a
+              >
+            </li>
+          </ul>
+          <div class="d-flex align-items-center me-3">
+            <span
+              class="navbar-text"
+              style="color: {{ store_status_color }}; font-weight: bold;"
+            >
+              We are: {{ store_status }}
+            </span>
+          </div>
+          <div class="d-flex me-3">
+            <input
+              class="form-control me-2"
+              type="search"
+              name="search"
+              placeholder="Search for products..."
+              hx-post="/products/search"
+              hx-trigger="keyup changed delay:500ms"
+              hx-target="#product-grid"
+              hx-swap="innerHTML"
+            />
+          </div>
+          <div class="d-flex align-items-center">
+            <a
+              href="{{ url_for('orders.cart') }}"
+              class="nav-link fw-bold py-1 px-0 me-3 text-white"
+            >
+              Cart
+              <span id="cart-counter" class="badge bg-success"
+                >{{ cart_count }}</span
+              >
+            </a>
+            {% if current_user.is_authenticated and current_user.is_admin %}
+            <li class="nav-item">
+              <a class="nav-link text-white" href="{{ url_for('admin.users') }}"
+                >Dashboard</a
+              >
+            </li>
+            {% endif %} {% if current_user.is_authenticated %}
+            <div class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle text-white"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                {{ current_user.fname }}
+              </a>
+              <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="navbarDropdown"
+              >
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="{{ url_for('main.profile', username=current_user.username) }}"
+                    >Profile</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="{{ url_for('orders.order_history', username=current_user.username) }}"
+                    >Orders</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="{{ url_for('main.account_settings') }}"
+                    >Account Settings</a
+                  >
+                </li>
+                <li class="nav-item d-flex align-items-center me-3">
+                  <div class="form-check form-switch">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="mode-toggle"
+                    />
+                    <label class="form-check-label text-white" for="mode-toggle"
+                      >Dark Mode</label
+                    >
+                  </div>
+                </li>
+
+                <li><hr class="dropdown-divider" /></li>
+
+                <li>
+                  <a class="dropdown-item" href="{{ url_for('auth.logout') }}"
+                    >Logout</a
+                  >
+                </li>
+              </ul>
+            </div>
+            {% else %}
+            <a
+              href="{{ url_for('auth.login') }}"
+              class="nav-link text-white me-3"
+              ><i class="fas fa-user"></i> Login</a
+            >
+            <a
+              href="{{ url_for('auth.register') }}"
+              class="nav-link text-white me-3"
+              >Register</a
+            >
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div id="toast-notification" class="toast-notification">
+      Product added to cart!
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <div class="alert alert-{{category}} text-center">{{message}}</div>
+    {% endfor %} {% endif %} {% endwith %} {% block content%} {% endblock %}
+
+    <footer class="bg-dark text-white py-5 mt-auto">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-3">
+            <h5 class="fw-bold">Your Store</h5>
+            <p>Fashion for a better you.</p>
+            <div class="d-flex">
+              <a
+                href="https://www.bentaherghassen.com"
+                class="text-white me-3"
+                target="_blank"
+                ><i class="fab fa-facebook fa-2x"></i
+              ></a>
+              <a
+                href="https://www.bentaherghassen.com"
+                class="text-white me-3"
+                target="_blank"
+                ><i class="fab fa-twitter fa-2x"></i
+              ></a>
+              <a
+                href="https://www.bentaherghassen.com"
+                class="text-white me-3"
+                target="_blank"
+                ><i class="fab fa-instagram fa-2x"></i
+              ></a>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <h5 class="fw-bold">Quick Links</h5>
+            <ul class="list-unstyled">
+              <li>
+                <a
+                  href="https://www.bentaherghassen.com"
+                  class="text-white text-decoration-none"
+                  >About Us</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.bentaherghassen.com"
+                  class="text-white text-decoration-none"
+                  >Contact Us</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.bentaherghassen.com"
+                  class="text-white text-decoration-none"
+                  >FAQs</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-3">
+            <h5 class="fw-bold">Legal</h5>
+            <ul class="list-unstyled">
+              <li>
+                <a
+                  href="https://www.bentaherghassen.com"
+                  class="text-white text-decoration-none"
+                  >Privacy Policy</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.bentaherghassen.com"
+                  class="text-white text-decoration-none"
+                  >Terms of Service</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.bentaherghassen.com"
+                  class="text-white text-decoration-none"
+                  >Shipping Info</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-md-3">
+            <h5 class="fw-bold">Newsletter</h5>
+            <p>Sign up to get the latest deals.</p>
+            <form
+              method="POST"
+              action="{{ url_for('main.newsletter_subscribe') }}"
+            >
+              {{ newsletter_form.hidden_tag() }}
+              <div class="input-group mb-3">
+                {{ newsletter_form.email(class="form-control",
+                placeholder="Email Address", required=True) }} {{
+                newsletter_form.submit(class="btn btn-dark-pink text-white") }}
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="text-center pt-4 mt-4 border-top">
+          <p>
+            &copy; 2020-<span id="current-year"></span> Your Store. All Rights
+            Reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script src="{{ url_for('static', filename='js/dark_mode_switch.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/current_date.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/cart_count.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="{{ url_for('static', filename='js/text_moving.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/htmx.min.js') }}"></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

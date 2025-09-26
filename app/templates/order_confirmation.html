@@ -1,0 +1,83 @@
+{% extends "layout.html" %} {% block content %}
+<div class="container mt-5">
+  <div class="card p-4 shadow-sm">
+    <h2 class="card-title text-center text-success mb-4">
+      Order Confirmed! 🎉
+    </h2>
+    <div class="row">
+      <div class="col-md-6">
+        <p><strong>Order Number:</strong> {{ order.id }}</p>
+        <p>
+          <strong>Order Date:</strong> {{ order.order_date.strftime('%B %d, %Y')
+          }}
+        </p>
+        <p>
+          <strong>Total Amount:</strong> ${{ "%.2f"|format(order.total_amount)
+          }}
+        </p>
+        <p>
+          <strong>Order Status:</strong>
+          {% if order.status == 'Shipped' %}
+          <span class="badge bg-success">{{ order.status }}</span>
+          {% else %}
+          <span class="badge bg-danger">{{ order.status }}</span>
+          {% endif %}
+        </p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Shipping Address:</strong></p>
+        <p>
+          {{ order.customer.fname }} {{ order.customer.lname }}<br />
+          {{ order.customer.home_address }}<br />
+          Phone: {{ order.customer.phone_number }}
+        </p>
+      </div>
+    </div>
+
+    <h4 class="mt-4 mb-3">Order Summary</h4>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">Product</th>
+            <th scope="col" class="text-end">Price</th>
+            <th scope="col" class="text-end">Quantity</th>
+            <th scope="col" class="text-end">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in order_items %}
+          <tr>
+            <td>{{ item.product.name }}</td>
+            <td class="text-end">${{ "%.2f"|format(item.product.price) }}</td>
+            <td class="text-end">{{ item.quantity }}</td>
+            <td class="text-end">
+              ${{ "%.2f"|format(item.product.price * item.quantity) }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+            <td class="text-end">${{ "%.2f"|format(order.total_amount) }}</td>
+          </tr>
+          <tr>
+            <td colspan="3" class="text-end"><strong>Shipping:</strong></td>
+            <td class="text-end">${{ "%.2f"|format(shipping_cost) }}</td>
+          </tr>
+          <tr class="table-success">
+            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+            <td class="text-end">${{ "%.2f"|format(final_total) }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="text-center mt-4">
+      <a href="{{ url_for('main.home') }}" class="btn btn-primary"
+        >Continue Shopping</a
+      >
+    </div>
+  </div>
+</div>
+{% endblock %}

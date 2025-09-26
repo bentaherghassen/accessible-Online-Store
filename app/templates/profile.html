@@ -1,0 +1,99 @@
+{% extends "layout.html" %} {% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white text-center">
+          <h1 class="card-title mb-0">{{ user.username }}'s Profile</h1>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-sm-4 text-muted">First Name</div>
+            <div class="col-sm-8">{{ user.fname }}</div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-sm-4 text-muted">Last Name</div>
+            <div class="col-sm-8">{{ user.lname }}</div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-sm-4 text-muted">Username</div>
+            <div class="col-sm-8">{{ user.username }}</div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-sm-4 text-muted">Email</div>
+            <div class="col-sm-8">{{ user.email }}</div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-sm-4 text-muted">Phone Number</div>
+            <div class="col-sm-8">{{ user.phone_number }}</div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-sm-4 text-muted">Bio</div>
+            <div class="col-sm-8">
+              {% if user.bio %} {{ user.bio }} {% else %}
+              <em class="text-secondary">Not set yet</em>
+              {% endif %}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-sm-4 text-muted">Home Address</div>
+            <div class="col-sm-8">{{ user.home_address }}</div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-sm-4 text-muted">Joined On</div>
+            <div class="col-sm-8">
+              {{ user.created_at.strftime('%B %d, %Y') }}
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-sm-4 text-muted">Gender</div>
+            <div class="col-sm-8">
+              {% if user.gender %} {{ user.gender }} {% else %}
+              <em class="text-secondary">Not set yet</em>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-5">
+    <h2 class="mb-4">Products by {{ user.username }}</h2>
+    <div class="row">
+      {% for product in products %}
+      <div class="col-md-4 col-lg-3 mb-4">
+        <div class="card h-100">
+          <a
+            href="{{ url_for('products.product_detail', product_id=product.id) }}"
+          >
+            {% if product.image_file %}
+            <img
+              src="{{ url_for('static', filename='media/product_images/' + product.image_file) }}"
+              class="card-img-top"
+              alt="{{ product.name }}"
+            />
+            {% else %}
+            <img
+              src="{{ url_for('static', filename='media/product_images/default.png') }}"
+              class="card-img-top"
+              alt="{{ product.name }}"
+            />
+            {% endif %}
+          </a>
+          <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text">${{ product.price }}</p>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="col">
+        <p>{{ user.username }} has not posted any products yet.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

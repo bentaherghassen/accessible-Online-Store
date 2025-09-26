@@ -1,0 +1,37 @@
+{% extends "admin/layout.html" %}
+{% block content %}
+<div class="container">
+    <h1 class="mt-4">Order #{{ order.id }}</h1>
+    <div class="card">
+        <div class="card-header">
+            Order Details
+        </div>
+        <div class="card-body">
+            <p><strong>Customer:</strong> {{ order.customer.username }}</p>
+            <p><strong>Email:</strong> {{ order.customer.email }}</p>
+            <p><strong>Order Date:</strong> {{ order.order_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p><strong>Total Amount:</strong> ${{ order.total_amount }}</p>
+            <p><strong>Status:</strong> {{ order.status }}</p>
+        </div>
+    </div>
+    <h2 class="mt-4">Products in this Order</h2>
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.products %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>${{ item.product.price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

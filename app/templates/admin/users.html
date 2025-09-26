@@ -1,0 +1,42 @@
+{% extends "admin/layout.html" %}
+{% block content %}
+<div class="container">
+    <h1 class="mt-4">Manage Users</h1>
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Admin</th>
+                <th>Banned</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ 'Yes' if user.is_admin else 'No' }}</td>
+                <td>{{ 'Yes' if user.is_banned else 'No' }}</td>
+                <td>
+                    <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-primary btn-sm">Edit</a>
+                    <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                    <form action="{{ url_for('admin.toggle_ban', user_id=user.id) }}" method="POST" style="display:inline;">
+                        {% if user.is_banned %}
+                        <button type="submit" class="btn btn-success btn-sm">Unban</button>
+                        {% else %}
+                        <button type="submit" class="btn btn-warning btn-sm">Ban</button>
+                        {% endif %}
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

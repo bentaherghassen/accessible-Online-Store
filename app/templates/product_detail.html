@@ -1,0 +1,154 @@
+{% extends "layout.html" %} {% block content %}
+<style>
+  .product-detail-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px;
+    gap: 40px;
+  }
+  .product-image-container {
+    flex: 1;
+    max-width: 500px;
+    text-align: center;
+  }
+  .product-image-container img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .product-info-container {
+    flex: 1;
+    max-width: 600px;
+  }
+  .product-info-container h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+  }
+  .product-info-container .price {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 20px;
+  }
+  .product-info-container .description {
+    font-size: 1em;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 30px;
+  }
+  .add-to-cart-btn {
+    padding: 15px 30px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: white;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .add-to-cart-btn:hover {
+    background-color: #218838;
+  }
+</style>
+
+<div class="product-detail-container">
+  <div class="product-image-container">
+    {% if product.image_file %}
+    <img
+      src="{{ url_for('static', filename='media/product_images/' + product.image_file) }}"
+      alt="{{ product.name }}"
+    />
+    {% else %}
+    <img
+      src="{{ url_for('static', filename='media/product_images/default.png') }}"
+      alt="{{ product.name }}"
+    />
+    {% endif %}
+  </div>
+  <div class="product-info-container">
+    <h1>{{ product.name }}</h1>
+    <p class="price">${{ product.price }}</p>
+    <p class="description">{{ product.description }}</p>
+    <p>
+      Posted by:
+      <a
+        href="{{ url_for('main.profile', username=product.uploader.username) }}"
+        >{{ product.uploader.username }}</a
+      >
+    </p>
+    {% if product.stock > 0 %}
+    <p><strong>In Stock:</strong> {{ product.stock }} items</p>
+    <button
+      class="add-to-cart-btn add-to-cart"
+      data-product-id="{{ product.id }}"
+    >
+      Add to Cart
+    </button>
+    {% else %}
+    <p style="color: red; font-weight: bold">Out of Stock</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="reviews-section container mt-5">
+  <h2>Reviews</h2>
+  <hr />
+
+  <!-- Review Form -->
+  {% if current_user.is_authenticated %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Leave a Review</h5>
+      <form id="review-form">
+        <div class="mb-3">
+          <label for="rating" class="form-label">Rating</label>
+          <select class="form-select" id="rating" name="rating" required>
+            <option value="5">5 - Excellent</option>
+            <option value="4">4 - Very Good</option>
+            <option value="3">3 - Good</option>
+            <option value="2">2 - Fair</option>
+            <option value="1">1 - Poor</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="review-text" class="form-label">Review</label>
+          <textarea
+            class="form-control"
+            id="review-text"
+            name="text"
+            rows="3"
+            required
+          ></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Review</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <p><a href="{{ url_for('auth.login') }}">Log in</a> to leave a review.</p>
+  {% endif %}
+
+  <!-- Existing Reviews -->
+  <div id="reviews-list">
+    {% for review in product.reviews %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h6 class="card-subtitle mb-2 text-muted">
+          {{ review.author.username }} - {{
+          review.created_at.strftime('%Y-%m-%d') }}
+        </h6>
+        <p class="card-text"><strong>Rating:</strong> {{ review.rating }}/5</p>
+        <p class="card-text">{{ review.text }}</p>
+      </div>
+    </div>
+    {% else %}
+    <p>No reviews yet. Be the first to review this product!</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock content %} {% block scripts %}
+<script src="{{ url_for('static', filename='js/review.js') }}"></script>
+{% endblock %}

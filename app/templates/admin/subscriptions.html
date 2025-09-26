@@ -1,0 +1,30 @@
+{% extends "admin/layout.html" %}
+{% block content %}
+<div class="container">
+    <h1 class="mt-4">Manage Subscribers</h1>
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Subscription Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subscriber in subscribers %}
+            <tr>
+                <td>{{ subscriber.id }}</td>
+                <td>{{ subscriber.email }}</td>
+                <td>{{ subscriber.subscription_date.strftime('%Y-%m-%d') }}</td>
+                <td>
+                    <form action="{{ url_for('admin.delete_subscriber', subscriber_id=subscriber.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

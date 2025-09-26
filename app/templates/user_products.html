@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">Products by {{ user.username }}</h2>
+    <div class="row">
+        {% if products %}
+            {% for product in products %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ url_for('static', filename='media/product_images/' + product.image_url) if product.image_url else url_for('static', filename='media/product_images/default.png') }}" class="card-img-top" alt="{{ product.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="{{ url_for('products.product_detail', product_id=product.id) }}">{{ product.name }}</a></h5>
+                        <p class="card-text">{{ product.description[:100] }}...</p>
+                        <p class="card-text"><strong>Price:</strong> ${{ product.price }}</p>
+                        <a href="#" class="btn btn-primary">Add to Cart</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center">This user has not uploaded any products yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

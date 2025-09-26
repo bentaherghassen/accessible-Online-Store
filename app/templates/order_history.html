@@ -1,0 +1,54 @@
+{% extends "layout.html" %} {% block content %}
+<div class="container mt-5">
+  <div class="card p-4 shadow-sm">
+    <h2 class="card-title text-center mb-4">Your Order History</h2>
+    {% if orders %}
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">Order ID</th>
+            <th scope="col">Date</th>
+            <th scope="col" class="text-end">Total Price</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.order_date.strftime('%B %d, %Y') }}</td>
+            <td class="text-end">
+              ${{ "%.2f"|format(order.total_amount|float + 7.00) }}
+            </td>
+            <td>
+              {% if order.status == 'Shipped' %}
+              <span class="badge bg-success">{{ order.status }}</span>
+              {% else %}
+              <span class="badge bg-danger">{{ order.status }}</span>
+              {% endif %}
+            </td>
+            <td>
+              <a
+                href="{{ url_for('orders.order_confirmation', order_id=order.id) }}"
+                class="btn btn-info btn-sm"
+                >View Details</a
+              >
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center">
+      <p>You have not placed any orders yet.</p>
+      <a href="{{ url_for('main.home') }}" class="btn btn-primary"
+        >Start Shopping</a
+      >
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
